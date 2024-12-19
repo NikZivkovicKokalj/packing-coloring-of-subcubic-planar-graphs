@@ -1,0 +1,77 @@
+\documentclass[12pt,a4paper]{amsart}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage[dvipsnames,usenames]{color}
+\usepackage{caption}
+\usepackage{lipsum}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\usetikzlibrary{graphs}
+\usetikzlibrary{graphs.standard}
+
+
+% oblika strani
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} 
+\newtheorem{definicija}{Definition}[section]
+\newtheorem{primer}[definicija]{Example}
+\newtheorem{opomba}[definicija]{Remark}
+
+\renewcommand\endprimer{\hfill$\diamondsuit$}
+
+\theoremstyle{plain}
+\newtheorem{lema}[definicija]{Lemma}
+\newtheorem{izrek}[definicija]{Theorem}
+\newtheorem{trditev}[definicija]{Statement}
+\newtheorem{posledica}[definicija]{Corollary}
+\newtheorem{conjecture}[definicija]{Conjecture}
+
+% ukaz za slovarsko geslo
+\newlength{\odstavek}
+\setlength{\odstavek}{\parindent}
+
+% novi ukazi 
+\newcommand{\program}{Financial mathematics}
+\newcommand{\imeavtorja}{Jon Pascal Miklavčič, Nik Živkovič Kokalj}
+\newcommand{\imementorja}{Assist.~Prof.~Dr.~Janoš Vidali}
+\newcommand{\imesomentorja}{Prof.~Dr.~Riste Škrekovski}
+\newcommand{\naslovdela}{Packing Coloring of Subcubic Planar Graphs}
+\newcommand{\letnica}{2024}
+
+\begin{document}
+
+\thispagestyle{empty}
+{\large
+\noindent UNIVERSITY OF LJUBLJANA\\[1mm]
+FACULTY OF MATHEMATICS AND PHYSICS\\[5mm]
+\program\ }
+\vfill
+
+\begin{center}{\large
+\imeavtorja\\[2mm]
+{\bf \Large \naslovdela}\\[10mm]
+{\normalsize Term Paper in Finance Lab}\\[1mm]
+{\normalsize Long Presentation}\\[1cm]
+{\normalsize Advisers:}\\
+{\normalsize \imementorja, \\ \imesomentorja}\\[2mm]}
+\end{center}
+\vfill
+
+{\large Ljubljana, \letnica}
+\pagebreak
+
+\end{document}
