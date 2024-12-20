@@ -1,10 +1,9 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[21]:
-
-
+from sage.all import *
 import random
+from packing_coloring import barvanje, barvanje_ucinkovito
+
+
+
 
 def modify_planar_subcubic_graph(G):
     """
@@ -31,7 +30,7 @@ def modify_planar_subcubic_graph(G):
         G.delete_edge(random_edge) # deleting the edge but still maintaining conectivity of a graph
         
         
-        
+
     elif operation == "rewire_edge":
     
         # deleting 2 edges
@@ -130,44 +129,20 @@ def modify_planar_subcubic_graph(G):
         
     return G
 
-# Example usage
-G = graphs.CycleGraph(6)  # Start with a simple cycle graph
-G.show()
-G_modified = modify_planar_subcubic_graph(G)
 
 
-f = modify_planar_subcubic_graph(G_modified)
-f.show()
 
-h = modify_planar_subcubic_graph(f)
-h.show()
-
-i = modify_planar_subcubic_graph(h)
-i.show()
-
-j = modify_planar_subcubic_graph(i)
-j.show()
-
-k = modify_planar_subcubic_graph(j)
-k.show()
-
-
-# In[ ]:
-import random
-from sage.all import *
-
-# "barvanje" is considered a function that will determine packing-color number
-def loop_find_max_coloring(G, barvanje, modify_planar_subcubic_graph, iterations=1000000):
+def loop_find_max_coloring(G, modify_planar_subcubic_graph, iterations=1000000):
     """
     Performs a specified number of iterations, tracking graphs with the highest coloring value.
     """
     max_value = 0  
     best_graphs = [] 
 
-    for i in range(1, iterations + 1):
+    for _ in range(1, iterations + 1):
 
         # Calculate the number of colors for the current graph
-        color_count = barvanje(G)
+        color_count = barvanje_ucinkovito(G)
 
         # If a new maximum value is reached, update max_value and save the graph
         if color_count > max_value:
@@ -184,14 +159,3 @@ def loop_find_max_coloring(G, barvanje, modify_planar_subcubic_graph, iterations
     for idx, best_G in enumerate(best_graphs, start=1):
         print(f"\nGraph #{idx} with value {max_value}:")
         best_G.show(title=f"Best graph #{idx} with value {max_value}")
-
-
-
-
-
-
-# In[19]:
-
-
-
-
