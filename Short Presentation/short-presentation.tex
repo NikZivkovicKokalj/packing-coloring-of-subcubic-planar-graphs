@@ -40,9 +40,17 @@
 \newtheorem{posledica}[definicija]{Corollary}
 \newtheorem{conjecture}[definicija]{Conjecture}
 
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+
 % ukaz za slovarsko geslo
 \newlength{\odstavek}
 \setlength{\odstavek}{\parindent}
+\newcommand{\geslo}[2]{\textbf{#1}\hspace*{3mm}\hangindent=\parindent\hangafter=1 #2}
 
 % novi ukazi 
 \newcommand{\program}{Financial mathematics}
@@ -73,5 +81,51 @@ FACULTY OF MATHEMATICS AND PHYSICS\\[5mm]
 
 {\large Ljubljana, \letnica}
 \pagebreak
+
+\section{Introduction}
+
+In this paper, our main objective is analysis of the packing coloring of subcubic planar graphs. The primary goal is to identify graphs within this class that have the maximum packing chromatic number and to find out the structural properties and characteristics of such graphs.
+
+\begin{definicija}
+    A graph $G=(V,E)$ is \emph{subcubic} if all vertices in $V$ satisfy the following condition:
+    $$
+    \operatorname{deg}(v) \leq 3
+    $$
+\end{definicija}
+
+\begin{definicija}
+    A planar graph is a graph $G=(V, E)$, that can be embedded in the plane such that no two edges intersect except at their endpoints.
+\end{definicija}
+
+\begin{definicija}
+    A packing coloring of a graph $G=(V, E)$ is a vertex coloring $c: V \to \mathbb{N}$ such that for any two vertices $u, v \in V$ with $c(u)=c(v)=k$, the distance $d(u, v)$ between $u$ and $v$ satisfies:
+    $$
+    d(u, v)>k.
+    $$
+    The packing chromatic number of $G$, denoted by $\chi_p(G)$, is the smallest integer $k$ such that $G$ admits a packing coloring using the colors $\{1,2, \ldots, k\}$.
+\end{definicija}
+
+\section{Plan}
+
+Our plan is to formulate an integer linear programming (ILP) to compute the packing chromatic number of a given graph $G$. Subsequently, we will implement a function that will generate planar subcubic graphs by applying randomized transformations to an input graph. 
+
+\subsection{Integer Programming}
+We consider a given graph $G=(V, E)$. For a vertex $v \in V(G)$ and an integer $i \in\{1,2, \ldots, k\}$, let $x_{v, i}$ equal 1 if $v$ is labeled with $i, 0$ otherwise. The problem of finding the packing chromatic number of a graph $G$ can be formulated as an integer linear programming as follows:
+\begin{flalign*}
+    \quad \text{minimize} \quad & z & \\
+    \quad \text{such that: } & \sum_{i=1}^k x_{v, i}=1, \quad \forall v \in V(G) & \\
+    & x_{v, i}+x_{u, i} \leq 1, \quad  \forall v, u  \in V(G), 1 \leq i \leq k \text{ for which } d(v, u) \leq i & \\
+    & i x_{v, i} \leq z, \quad \forall v \in V(G), 1 \leq i \leq k & \\
+    & x_{v, i} \in\{0,1\}, \quad v \in V(G), 1 \leq i \leq k &
+\end{flalign*}
+
+This ILP is easy to understand but for implementation we will use a slightly more effecient program. Let $D$ denote the diameter of a graph $G$. 
+\begin{flalign*}
+    \quad \text{minimize} \quad & |V(G)|+D-1-\sum_{v \in V} \sum_{i=1}^{D-1} x_{v, i} & \\
+    \quad \text{such that: } & \sum_{i=1}^D x_{v, i}=1, \quad \forall v \in V(G) & \\
+    & x_{v, i}+x_{u, i} \leq 1, \quad  \forall v, u  \in V(G), 1 \leq i \leq D -1 \text{ for which } d(v, u) \leq i  & \\
+    & x_{v, i} \in\{0,1\}, \quad v \in V(G), 1 \leq i \leq D &
+\end{flalign*}
+
 
 \end{document}
