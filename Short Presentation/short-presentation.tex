@@ -127,5 +127,27 @@ This ILP is easy to understand but for implementation we will use a slightly mor
     & x_{v, i} \in\{0,1\}, \quad v \in V(G), 1 \leq i \leq D &
 \end{flalign*}
 
+\subsection{Generating Graphs}
+To obtain the best possible packing chromatic number, we need to generate as many different subcubic planar graphs as possible.  
+To achieve this, we have identified methods for generating new graphs that are subcubic and planar from an existing graph.
+\vspace{5pt}  
+\begin{itemize}
+    \item The first method involves adding one vertex to the graph $G$. A new vertex is generated and added to the graph, 
+    which we will refer to as $e$. The algorithm selects a random edge in the given graph, for instance, the edge $(u, v)$. 
+    It then generates two new edges, $(e, u)$ and $(e, v)$, and deletes the existing edge $(u, v)$. This ensures that planarity, 
+    the graph being subcubic, and the graph's connectivity are preserved.  
+    \vspace{5pt}
+    \item The second method involves rewiring edges. The algorithm selects a random edge in graph $G$ and checks if the graph, 
+    without the chosen edge, remains connected. If so, this edge is removed. This process is repeated until two edges are removed. 
+    If no edges can be removed, or only one can, then none or only one edge will be removed. After this step, two new edges are randomly 
+    added. This is done by sampling two random vertices and generating a new edge between them. If the resulting graph meets the requirements 
+    of connectivity, planarity, and being subcubic, the new edge is added to the graph.
+    \vspace{5pt}  
+    \item The third and final method involves choosing a random face of graph $G$. Selecting a face ensures that the graph remains planar, 
+    subcubic, and connected. Since simply choosing a face reduces the graph's complexity, this serves as a kind of reset. Nevertheless, 
+    we further modify the graph by adding vertices, adding edges, and deleting edges.
+    \vspace{5pt}  
+\end{itemize}
+
 
 \end{document}
