@@ -74,6 +74,7 @@ FACULTY OF MATHEMATICS AND PHYSICS\\[5mm]
 {\large Ljubljana, \letnica}
 \pagebreak
 
+\section{Generating graphs}
 To obtain the best possible packing chromatic number, we needed to generate as many different subcubic planar graphs as 
 possible.  To achieve this, we made a function named modify\_planar\_subcubic\_graph(G) which takes subcubic planar graph $G$ 
 as an input and returnsdifferent subcubic planar graph.
@@ -124,5 +125,20 @@ We consider the following cases:
 \end{enumerate}
 
 Simply choosing a face reduces the graph's complexity, serving as a kind of reset.
+
+\section{iteration function}
+
+When we finished ILP and function that generates subcubic planar graph out of existing one, all that was left to do, was
+making a code that combines before mentioned functions. We named that "loop\_find\_max\_coloring". This function takes 
+2 arguments. First is inital graph and second one is iterations, which is set to 1000000, if left out. This function
+performs a specified number of iterations and tracks graphs with the highest coloring value. Function starts with set
+max\_value to 0. During the function this value will alter depending on the packing coloring numbers. We also made empty 
+list called best\_graphs which saves graphs that have packing coloring number the same as max\_value. Function contains
+a foor loops which repeats as many times as there are iterations. For each iteration (each graph), we firstly determine
+color\_count which uses function barvanje\_ucinkovito to get packing coloring number. If color\_count is higher as the
+max\_value, then color\_count becomes max\_value and list best\_graphs resets and now contains only graph that had before
+mentioned color\_count. Else if color\_count is the same as max\_value we only alter list best\_graphs by adding that 
+graph to the list. After all of the iterations, all there is left to do is to display graphs with the highest packing
+coloring number.
 
 \end{document}
