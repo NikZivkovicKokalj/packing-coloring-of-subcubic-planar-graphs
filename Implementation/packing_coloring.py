@@ -1,5 +1,5 @@
+from sage.graphs.graph_generators import graphs
 from sage.all import *
-
 
 
 

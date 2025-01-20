@@ -1,6 +1,7 @@
-from sage.all import *
 import random
-from packing_coloring import barvanje, barvanje_ucinkovito
+
+from sage.graphs.graph_generators import graphs
+from sage.all import *
 
 
 
