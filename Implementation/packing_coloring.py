@@ -42,38 +42,40 @@ def barvanje(G):
     return ilp.get_values(z[0])
 
 
-
-
 def barvanje_ucinkovito(graph):
     """
-    Calculates the packing coloring number for the given graph G. More efficient that function barvanje
+    Calculates the packing coloring number for the given graph G.
     """
     # Variables
     vertices = graph.vertices()
-    D = len(vertices)  # Maximum number of colors
-    V = len(vertices)  # Number of vertices in G
+    diameter = graph.diameter()  
+    D = diameter + 1  # max possible colors
 
-    # Create a MixedIntegerLinearProgram instance
     ilp = MixedIntegerLinearProgram(maximization=False)
     x = ilp.new_variable(binary=True)
+    k = ilp.new_variable(real=True, nonnegative=True)
 
-    # Objective function
-    obj = V + D - 1 - sum(x[v, i] for v in vertices for i in range(1, D))
-    ilp.set_objective(obj)
+    # minimizing max color index
+    ilp.set_objective(k[0])  
 
     # Constraints
-    # 1. Each vertex is assigned exactly one color
+    # each vertex only 1 color
     for v in vertices:
         ilp.add_constraint(sum(x[v, i] for i in range(1, D + 1)) == 1)
 
-    # 2. Ensure distance constraints for the packing-coloring condition
-    for i in range(1, D):
+    # vertices with the same color must satisfy the distance 
+    for i in range(1, D + 1):
         for v in vertices:
             for u in vertices:
-                if u != v and graph.distance(v, u) <= i:
+                if u != v and graph.distance(v, u) < i + 1:
                     ilp.add_constraint(x[v, i] + x[u, i] <= 1)
 
-    # Solve the ILP
-    ilp.solve()
+    # `k[0]` must capture max color index used
+    for i in range(1, D + 1):
+        for v in vertices:
+            ilp.add_constraint(k[0] >= i * x[v, i])
 
-    return ilp.get_objective_value()
+    ilp.solve()
+    packing_number = int(ilp.get_objective_value())
+
+    return packing_number

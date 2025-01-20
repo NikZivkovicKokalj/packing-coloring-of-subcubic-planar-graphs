@@ -16,10 +16,10 @@ def modify_planar_subcubic_graph(G):
     for v in G.vertices():
         if G.degree(v) > 3:
             raise ValueError("The graph must be subcubic.")
+    if not G.is_connected():
+        raise ValueError("The graph must be connected.")
     
     operation = random.choice(["add_vertex", "rewire_edge", "face"])
-    #f = G.copy()
-    print(operation)
     
     if operation == "add_vertex":
         new_vertex = max(G.vertices()) + 1
