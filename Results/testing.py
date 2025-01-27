@@ -1,6 +1,7 @@
+import os
 import random
 import pickle
-import os
+from itertools import islice
 from sage.all import *
 from sage.graphs.graph_generators import graphs
 
@@ -10,15 +11,14 @@ from Implementation.graph_generating import *
 
 
 
-def save_state(filename, max_coloring_value, best_graphs, current_graph, iteration):
+def save_state(filename, highest_value, best_graphs, start_iteration):
     """
     Save the state to a .pkl file.
     """
     state = {
-        "max_coloring_value": max_coloring_value,
+        "highest_value": highest_value,
         "best_graphs": best_graphs,
-        "current_graph": current_graph,
-        "iteration": iteration
+        "start_iteration": start_iteration
     }
     with open(filename, "wb") as f:
         pickle.dump(state, f)
@@ -36,54 +36,47 @@ def load_state(filename):
 
 
 
-def main(iterations=100000, save_interval=1000, state_file="graph_state.pkl"):
-    """
-    Main program to apply transformations and find graphs with the largest packing coloring number.
-    """
-    max_coloring_value = 0
+def main(m=100, graph_number=1, state_file="graph_state.pkl"): 
+    highest_value = 0
     best_graphs = []
-    current_graph = None
-    start_iteration = 0
 
-    # Attempt to load the state if it exists
     try:
         state = load_state(state_file)
-        max_coloring_value = state["max_coloring_value"]
+        highest_value = state["highest_value"]
         best_graphs = state["best_graphs"]
-        current_graph = state["current_graph"]
-        start_iteration = state["iteration"]
-        print(f"Resuming from iteration {start_iteration} with max coloring value {max_coloring_value}.")
+        start_iteration = state["start_iteration"]
+        print(f"Resuming from iteration {start_iteration} with max coloring value {highest_value}.")
     except FileNotFoundError:
+        start_iteration = 1
         print("No saved state found. Starting from scratch.")
-        # Generate initial random planar subcubic graph
-    while not current_graph:
-        graph = graphs.RandomGNP(10, 0.3)
-        subgraph = graph.subgraph(lambda x: graph.degree(x) <= 3)
-        if subgraph.is_planar() and subgraph.is_connected():
-            current_graph = subgraph
 
-    # Start or continue iterations
-    for i in range(start_iteration + 1, iterations + 1):
-        # Calculate packing coloring number
-        coloring_number = barvanje(current_graph)
+    for n in range(start_iteration, m): 
 
-        if coloring_number > max_coloring_value:
-            max_coloring_value = coloring_number
-            best_graphs = [current_graph.copy()]
-        elif coloring_number == max_coloring_value:
-            best_graphs.append(current_graph.copy())
+        print(f"Starting iteration: {n}")
 
-        # Apply transformation
-        current_graph = modify_planar_subcubic_graph(current_graph)
+        for (i, G) in islice(enumerate(graphs.nauty_geng(f"{n} -c")), graph_number, None): 
 
-        # Save the state at intervals
-        if i % save_interval == 0:
-            save_state(state_file, max_coloring_value, best_graphs, current_graph, i)
-            print(f"State saved at iteration {i}.")
+            print(f"Looking at graph {i} with {n} vertices")
 
-    print(f"Highest packing coloring number achieved: {max_coloring_value}")
-    print(f"Number of graphs with the highest packing coloring number: {len(best_graphs)}")
+            if G.is_planar() and max(G.degree(v) for v in G.vertices()) <= 3: 
+                packing_coloring_number = barvanje(G)
 
+                if packing_coloring_number > highest_value:
+
+                    print(f"Graph has the PCN: {packing_coloring_number}")
+                    highest_value = packing_coloring_number
+                    best_graphs = [G]
+
+                elif packing_coloring_number == highest_value:
+
+                    print(f"Graph has the PCN: {packing_coloring_number}")
+                    best_graphs.append(G)
+
+            else: print("Graph is not planar.")
+        
+        save_state(state_file, highest_value, best_graphs, n)
+        print(f"State saved at iteration {n}.")
+    
     # Create the "Results" folder if it doesn't exist
     results_folder = "Results"
     if not os.path.exists(results_folder):
@@ -91,26 +84,26 @@ def main(iterations=100000, save_interval=1000, state_file="graph_state.pkl"):
 
     # Save the best graphs into the "Results" folder
     for idx, best_graph in enumerate(best_graphs, start=1):
-        filename = f"{results_folder}/best_graph_{idx}_color_{max_coloring_value}.graph.sobj"
+        filename = f"{results_folder}/best_graph_{idx}_color_{highest_value}.graph.sobj"
         best_graph.save(filename)
         print(f"Graph #{idx} saved as {filename}")
 
 
 
 
-# LOOKING AT THE BEST GRAPHS
-state = load_state("graph_state.pkl")
+def display_best_graphs(state_file="graph_state.pkl"):
+    # LOOKING AT THE BEST GRAPHS
+    state = load_state("graph_state.pkl")
 
-# Extract relevant data
-max_coloring_value = state["max_coloring_value"]
-best_graphs = state["best_graphs"]
+    # Extract relevant data
+    highest_value = state["highest_value"]
+    best_graphs = state["best_graphs"]
 
-# Print information about the graphs
-print(f"Maximum packing coloring value: {max_coloring_value}")
-print(f"Number of saved graphs: {len(best_graphs)}")
+    # Print information about the graphs
+    print(f"Maximum packing coloring value: {highest_value}")
+    print(f"Number of saved graphs: {len(best_graphs)}")
 
-# Display each graph
-for idx, graph in enumerate(best_graphs, start=1):
-    print(f"Displaying graph #{idx} with max coloring value {max_coloring_value}...")
-    graph.show(title=f"Graph #{idx} with value {max_coloring_value}")
-
+    # Display each graph
+    for idx, graph in enumerate(best_graphs, start=1):
+        print(f"Displaying graph #{idx} with max coloring value {highest_value}...")
+        graph.show(title=f"Graph #{idx} with value {highest_value}")
