@@ -74,71 +74,58 @@ FACULTY OF MATHEMATICS AND PHYSICS\\[5mm]
 {\large Ljubljana, \letnica}
 \pagebreak
 
-\section{Generating graphs}
-To obtain the best possible packing chromatic number, we needed to generate as many different subcubic planar graphs as 
-possible.  To achieve this, we made a function named modify\_planar\_subcubic\_graph(G) which takes subcubic planar graph $G$ 
-as an input and returnsdifferent subcubic planar graph.
+\section*{Generating graphs}
 
-Description of a function modify\_planar\_subcubic\_graph(G):\\
+\subsection*{Function: \texttt{removable\_vertices}}
 
-Firstly, we ensure that the entered graph is subcubic and planar. If not, the function returns an error. We also added a 
-condition that the graph must be connected. This is because, for the packing coloring number, if the graph is composed of 
-multiple disconnected parts, the packing coloring number of the graph will equal the packing coloring number of the part 
-that has the biggest packing coloring number. This ensures that the function is not as time-consuming as it would otherwise 
-be. Now, we are certain that we are operating on a subcubic and planar graph. We then defined three different operations 
-on the graph. In each iteration, one of them is executed. Which operation will be chosen is determined randomly using the 
-function "choice" from the random library. \\
+The function \texttt{removable\_vertices(G)} identifies vertices in a given graph \( G \) that can be removed while 
+maintaining the connectivity of the graph.
 
-We named the first operation add\_vertex. A new vertex is generated and added to the graph. 
-We refer to the added vertex as $e$. Again, using the function "choice", the algorithm selects a random edge in the 
-given graph, for instance, the edge $(u, v)$. It then generates two new edges, $(e, u)$ and $(e, v)$, and deletes the 
-existing edge $(u, v)$. Since we are essentially adding a vertex on to an existing edge, planarity is preserved. The graph 
-remains subcubic because the vertex degrees remain unchanged. The graph also remains connected. \\
+We firstly initialize an empty list to store removable vertices. The function then iterates through each vertex \( v \) 
+in the vertex set of \( G \). Fore each iteration a copy \( H \) of \( G \) is created to prevent modifying the original
+graph. After that vertex \( v \) is removed from a copy. If \( H \) remains connected after the removal of \( v \), then 
+\( v \) is appended to the \texttt{removable} list. At the end the function returns the list of removable vertices.
 
-The second operation is rewire\_edge. The algorithm selects a random edge in the graph $G$ and checks if the graph, 
-without the chosen edge, remains connected. If so, the edge is removed. This process is repeated until two edges are removed 
-or until there are no appropriate edges left to remove. This means that if no edges can be removed, or only one can be removed, 
-then none or only one edge will be removed. After this step, two new edges are randomly added. This is done by sampling 
-two random vertices and generating a new edge between them. If the resulting graph meets the requirements of being planar 
-and subcubic, the new edge is added to the graph. Since adding edges cannot destroy the connectivity of a graph, we do not 
-need to check for connectivity. \\
 
-The third and final operation is face. The algorithm chooses a random face of the entered graph $G$. If there 
-are no faces to choose from, the function returns an error. Selecting a face ensures that the graph remains planar, subcubic, 
-and connected. After the face is chosen, we label this face as a new graph $f$. We then add a new vertex to $f$ and refer 
-to this vertex as $v$. We want to connect vertex $v$ to the graph $f$. This is done by adding edges from $v$ to vertices 
-in $f$. Firstly, we check how many eligible vertices exist in $f$ that can be connected to $v$.\\
+\subsection*{Function: \texttt{modify\_planar\_subcubic\_graph}} 
 
-We consider the following cases:
+The function \\
+\texttt{modify\_planar\_subcubic\_graph(G)} modifies a planar subcubic graph \( G \) into a new subcubic 
+planar graph while ensuring that the total number of vertices remains constant.
 
 \begin{enumerate}
-    \item There are less than two eligible vertices in $f$ that can be connected to $v$: \\
-    If there is one or zero eligible vertices, we proceed as in the operation \texttt{add\_vertex} by placing vertex $v$ 
-    on an existing edge. Since only one edge is removed and two are added, we search for another edge to remove while 
-    maintaining the connectivity of the graph. If no such edge exists, only one edge will be removed, and two will be added.
-
-    \item There are two or more eligible vertices in $f$ that can be connected to $v$:\\
-    In this case, using the function \texttt{randint}, we randomly select two or three eligible vertices to connect to $v$. 
-    If there are only two eligible vertices, there is no need for random selection. After selecting the vertices, we connect 
-    them to $v$. Since we operate on a face of the graph, planarity is preserved. Because we added a vertex and edges, we 
-    also aim to remove as many edges as we added. This is achieved by choosing random edges to remove while maintaining connectivity.
+    \item A copy of \( G \) is created to avoid altering the original input.
+    \item The function verifies that \( G \) is both planar and subcubic. If not, function raises an error.
+    \item The set of faces in \( G \) is retrieved. If no faces exist, the function returns \( G \) unchanged.
+    \item A random face is selected, and its vertices are extracted into a list \\
+    'face\_vertices'.
+    \item A random number (between 1 and 3) of edges in the face is selected for subdivision. Subdivision is the insertion 
+    of a new vertex in the middle of an exiting edge, which keeps graph subcubic and planar.
+    \begin{itemize}
+        \item A list of edges within the face is created. If no such edges exist, the subdivision step is skipped.
+        \item A random edge \( (a, b) \) is chosen.
+        \item A new vertex is introduced between \( a \) and \( b \) and connected to each one of them, while edge 
+        \( (a, b) \) 
+        \item The function \texttt{removable\_vertices} is called to check if any vertex can be removed.
+        \item If a removable vertex exists, a random one is deleted.
+        \item If no removable vertex is found, the newly inserted vertex is deleted, and the original edge \( (a, b) \) 
+        is restored since we want to maintain the number of vertices in the input graph the same as in the modified graph.
+    \end{itemize}
+    \item A new vertex is introduced:
+    \begin{itemize}
+        \item The set of eligible vertices (those of degree at most 2) within the selected face is identified. These 
+        vertices are eligible for a new vertex to be connected to them. We only choose vertices from a selected face
+        because we do not want to compromise planarity.
+        \item A new vertex is added to \( G \).
+        \item The new vertex is connected to a subset of eligible vertices with one, two or three edges.
+        \item The function \texttt{removable\_vertices} is used again to check for possible vertex removals.
+        \item If a removable vertex exists, a random one is deleted.
+        \item If no removable vertex is found, the newly added vertex is deleted.
+    \end{itemize}
+    \item The modified graph \( G \) is returned.
 \end{enumerate}
 
-Simply choosing a face reduces the graph's complexity, serving as a kind of reset.
+This approach ensures that the graph remains planar and subcubic while making modifications that preserve its connectivity.
 
-\section{iteration function}
-
-When we finished ILP and function that generates subcubic planar graph out of existing one, all that was left to do, was
-making a code that combines before mentioned functions. We named that "loop\_find\_max\_coloring". This function takes 
-2 arguments. First is inital graph and second one is iterations, which is set to 1000000, if left out. This function
-performs a specified number of iterations and tracks graphs with the highest coloring value. Function starts with set
-max\_value to 0. During the function this value will alter depending on the packing coloring numbers. We also made empty 
-list called best\_graphs which saves graphs that have packing coloring number the same as max\_value. Function contains
-a foor loops which repeats as many times as there are iterations. For each iteration (each graph), we firstly determine
-color\_count which uses function barvanje\_ucinkovito to get packing coloring number. If color\_count is higher as the
-max\_value, then color\_count becomes max\_value and list best\_graphs resets and now contains only graph that had before
-mentioned color\_count. Else if color\_count is the same as max\_value we only alter list best\_graphs by adding that 
-graph to the list. After all of the iterations, all there is left to do is to display graphs with the highest packing
-coloring number.
 
 \end{document}
