@@ -1,5 +1,6 @@
 import os
 import random
+import time
 import pickle
 from itertools import islice
 
@@ -54,10 +55,12 @@ def complete_search(m, k=100, state_file="graph_state.pkl"):
         try:
             # Track progress within the inner loop
             for i, G in islice(enumerate(graph_generator), start_iteration, None):
-                try:
-                    packing_coloring_number = packing_coloring(G)
-                except: 
-                    continue
+                if G.is_planar(): 
+                    try:
+                        packing_coloring_number = packing_coloring(G)
+                    except: 
+                        continue
+                else: print("Graph is not planar.")
 
                 print(f"Graph {i} has PCN of {packing_coloring_number}.")
 
@@ -121,9 +124,9 @@ def load_state(filename):
 
 
 
-def display_best_graphs(state_file="graph_state.pkl"):
+def display_best_graphs(n, state_file="graph_state.pkl"):
     """
-    Displays all the best graphs stored in the state_file
+    Displays n of the best graphs stored in the state_file
     """
     state = load_state(state_file)
 
@@ -137,6 +140,8 @@ def display_best_graphs(state_file="graph_state.pkl"):
 
     # Display each graph
     for idx, graph in enumerate(best_graphs, start=1):
+        if idx > n: 
+            break
         print(f"Displaying graph #{idx} with max coloring value {highest_value}...")
         graph.show(title=f"Graph #{idx} with value {highest_value}")
 
@@ -161,8 +166,13 @@ def initialize_base_graph(num_vertices):
     """
     # Use filters to choose a planar, connected and subcubic graph 
     gen = graphs.nauty_geng(f"{num_vertices} -c -D3 -p")  
-    
-    return next(gen)
+    G = next(gen)
+
+    while True: 
+        if G.is_planar(): 
+            return G
+        G = next(gen)
+        
 
 
 
@@ -239,3 +249,48 @@ def random_search(num_vertices, iterations, save_interval=100, state_file="graph
     save_state(state_file, highest_value, best_graphs, iteration, current_graph)
 
     print("DONE!")
+
+
+
+
+def measure_packing_coloring_time(n):
+    """
+    Measures average runtime of packing_coloring across graphs with 5-20 vertices.
+    """
+    results = []
+    for num_vertices in range(5, 21):
+        print(f"\nProcessing graphs with {num_vertices} vertices...")
+        graph_generator = graphs.nauty_geng(f"{num_vertices} -c -D3 -p") 
+
+        iteration = 0
+        times = []
+        
+        try:
+            # Track progress within the inner loop
+            for G in graph_generator:
+                if iteration > n:
+                    break
+                if G.is_planar(): 
+                    try:
+                        start = time.perf_counter()
+                        packing_coloring(G)
+                        end = time.perf_counter()
+
+                        times.append(end - start)
+                        iteration += 1
+                    except: 
+                        continue
+                else: print("Graph is not planar.")
+
+                print(f"Processed graph {iteration}")   
+
+        except KeyboardInterrupt:
+            # Save progress on interruption
+            print("\nInterrupted!")
+            return results
+
+        avg_time = sum(times) / len(times)
+        results.append((n, avg_time))
+        print(f"n={num_vertices}: Avg time = {avg_time:.4f}s")
+
+    return results
