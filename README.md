@@ -20,9 +20,12 @@ All functions for running your own analysis are located in the `Implementation` 
 Before running the scripts, ensure that you have **SageMath** installed on your computer. Link for installation: [Download SageMath](https://www.sagemath.org/).
 
 ### Running the Script
-To execute the script, navigate to the repository's root directory and run the following command in your terminal:
+To execute the script, navigate to the repository's root directory and run the following command in your terminal:c
 ```bash
-sage Implementation/experimentation.py
+sage
+```
+```bash
+load("Implementation/experimentation.py")
 ```
 
 
