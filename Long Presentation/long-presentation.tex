@@ -9,6 +9,7 @@
 \usepackage{tikz}
 \usepackage{xcolor}
 \usepackage{booktabs}
+\usepackage{graphicx}
 
 \usetikzlibrary{graphs}
 \usetikzlibrary{graphs.standard}
@@ -200,9 +201,46 @@ The table illustrates the computational challenges posed by solving this problem
     As the number of vertices increases, the number of possible subcubic planar graphs grows quickly. A complete search, which evaluates all possible graphs, quickly becomes infeasible.
 
     \item \textbf{Increasing complexity of ILPs:}  
-    Even if the number of graphs didn't increase, computing the PCN remains NP-hard, with running time increasing significantly as graph size grows.
+    Even if the number of graphs didn't increase, computing the PCN remains NP, with running time increasing significantly as graph size grows.
 \end{enumerate}
 
-Here we use random search as a feasible alternative. Both algorithms tackle the PCN problem under NP-hard constraints. Complete search provides exact maximal value for small graphs but is impractical for larger ones. Randomized search sacrifices completeness for scalability, allowing exploration of larger graphs at the cost of optimality guarantees. 
+Here we use random search as a feasible alternative. Both algorithms tackle the PCN problem under NP constraints. Complete search provides exact maximal value for small graphs but is impractical for larger ones. Randomized search sacrifices completeness for scalability, allowing exploration of larger graphs at the cost of optimality guarantees. 
+
+\section{Experimental Framework}
+\subsection{Hardware and Methodological Constraints}
+The investigation analyzed connected subcubic planar graphs with 5-20 vertices. Due to hardware limitations, the complete search algorithm was restricted to graphs with up to 11 vertices. The highest PCN identified was 6, achieved on a number of 11-vertex graph (stored in \texttt{Results/complete\_search\_1-11\_vertices.pkl}).
+
+\subsection{Sampling}
+For $n \leq 11$, \texttt{complete\_search} evaluated all graphs; for $n > 11$, \texttt{random\_search} with 10,000 iterations was used. 
+
+\section{Conclusion}
+This study empirically identifies structural properties correlated with higher PCNs in subcubic planar graphs. 
+Hardware constraints limited exhaustive verification, but heuristic evidence suggests PCN $\leq 7$ for $n \leq 20$. 
+
+\begin{itemize}
+    \item \textbf{Elongated paths, cycle-based structures:} Graphs that achieve high PCN typically feature elongated paths, cycle-based structures, 
+    and relatively sparse local connectivity. These properties contribute to greater distances between identically colored vertices, increasing 
+    the overall PCN. More cycles means more connections between nodes, which limits the coloring possibilities. If a graph has many cycles, 
+    then there are densely connected subgraphs that require more colors because identically colored nodes must be far enough apart. If a graph 
+    contains many short cycles, then it is more difficult to use the same colors for nodes in the graph, as the coloring constraints spread faster.
+
+    \item \textbf{Higher degree of vertices:} If there were many nodes of degree 1 or 2, the graph would contain many tree structures, which lower the packing coloring 
+    number. Nodes with degree 3, however, ensure that the graph remains sufficiently dense and has many cycles. Almost all nodes have degree 3 because this is the best option for creating dense cyclic structures that raise the packing 
+    coloring number while keeping the graph in the subcubic and planar category.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.2\textwidth]{Images/Screenshot 2025-01-31 at 23.25.16}
+    \caption{Graph with PCN 6 on 11 vertices}
+    \label{fig:screenshot1}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.2\textwidth]{Images/Screenshot 2025-01-31 at 23.23.59}
+    \caption{Graph with PCN 6 on 11 vertices}
+    \label{fig:screenshot2}
+\end{figure}
 
 \end{document}
