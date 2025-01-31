@@ -4,9 +4,12 @@ from sage.graphs.graph_generators import graphs
 from sage.all import *
 
 
-#new graph generating function
+
+
 def removable_vertices(G):
-    """returns list of vertices that can be removed while maintaining connectivity of a graph"""
+    """
+    Returns list of vertices that can be removed while maintaining connectivity of a graph
+    """
     removable = []
     
     for v in G.vertices():
@@ -18,7 +21,8 @@ def removable_vertices(G):
     
     return removable
 
-import random
+
+
 
 def modify_planar_subcubic_graph(G):
     """
@@ -104,4 +108,3 @@ def modify_planar_subcubic_graph(G):
 
     
     return G
-
